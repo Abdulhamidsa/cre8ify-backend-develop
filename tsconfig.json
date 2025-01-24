@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "ES2022", // Use modern JS features (async/await, etc.)
+    "module": "ESNext", // Use ES module syntax
+    "outDir": "./dist", // Output directory for compiled files
+    "rootDir": "./src", // Root directory for source files
+    "strict": true, // Enable strict type-checking options
+    "esModuleInterop": true, // Allow default imports from CommonJS
+    "forceConsistentCasingInFileNames": true, // Enforce file name casing
+    "moduleResolution": "node", // Resolve modules like Node.js
+    "resolveJsonModule": true, // Allow importing JSON files
+    "skipLibCheck": true, // Skip checking type declaration files
+    "allowSyntheticDefaultImports": true, // Allow default imports for modules without a default export
+    "noImplicitAny": true, // Raise errors for implicit `any` types
+    "strictNullChecks": true, // Enable strict null checks
+    "noUnusedLocals": true, // Error on unused local variables
+    "noUnusedParameters": true, // Error on unused function parameters
+    "noFallthroughCasesInSwitch": true, // Prevent fallthrough in switch cases
+    "incremental": true, // Enable incremental compilation for faster rebuilds
+    "experimentalDecorators": true, // Enable support for decorators
+    "emitDecoratorMetadata": true // Emit metadata for decorators (useful for DI frameworks)
+  },
+  "typeRoots": ["./src/types", "./node_modules/@types"],
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"] // Exclude `node_modules` and output directory
+}
