@@ -1,6 +1,6 @@
 import { v2 as cloudinary } from 'cloudinary';
 
-import { SECRETS } from '../config/config.js';
+import { SECRETS } from '../config/secrets.js';
 
 cloudinary.config({
   cloud_name: SECRETS.cloudinaryCloudName,

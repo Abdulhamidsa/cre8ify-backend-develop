@@ -16,7 +16,7 @@ export interface PostBase {
 
 // Define the unpopulated `userId` type
 export interface PostDocument extends PostBase, Document {
-  userId: Types.ObjectId; // Unpopulated userId
+  userId: Types.ObjectId;
   likes: Types.ObjectId[];
   comments: CommentSubdoc[];
 }
@@ -39,7 +39,7 @@ export interface PopulatedPostDocument extends PostBase, Document {
 const commentSchema = new Schema<CommentSubdoc>(
   {
     _id: {
-      type: Schema.Types.ObjectId, // Automatically generates a unique ID for each comment
+      type: Schema.Types.ObjectId,
       auto: true,
     },
     userId: {
@@ -57,7 +57,7 @@ const commentSchema = new Schema<CommentSubdoc>(
     },
   },
   {
-    _id: true, // Ensure MongoDB auto-generates _id for each comment
+    _id: true,
   },
 );
 

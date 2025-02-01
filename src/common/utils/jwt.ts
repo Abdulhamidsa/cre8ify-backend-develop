@@ -1,6 +1,6 @@
 import jwt, { JsonWebTokenError, JwtPayload } from 'jsonwebtoken';
 
-import { SECRETS } from '../config/config.js';
+import { SECRETS } from '../config/secrets.js';
 import { AppError } from '../errors/app.error.js';
 import { SignInResponse } from '../types/user.types.js';
 import { getErrorMessage } from './error.utils.js';

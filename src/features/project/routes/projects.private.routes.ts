@@ -6,13 +6,7 @@ import {
   editProjectValidationSchema,
   projectIdValidationSchema,
 } from '../../../common/validation/project.zod.js';
-import {
-  handleAddProject,
-  handleDeleteProject,
-  handleEditProject,
-  handleGetUserProjects,
-  handleGetUserPublicProjects,
-} from '../project.handler.js';
+import { handleAddProject, handleDeleteProject, handleEditProject, handleGetUserProjects } from '../project.handler.js';
 
 const router = Router();
 
@@ -25,7 +19,6 @@ router.put(
   handleEditProject,
 );
 // user projects by id
-router.get('/projects/user/:friendlyId', handleGetUserPublicProjects);
 router.delete('/project/:id', ValidZod(projectIdValidationSchema, 'params'), handleDeleteProject);
 
 export default router;

@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
 
-import { SECRETS } from '../config/config.js';
 import { AppError } from '../errors/app.error.js';
 import { getErrorMessage } from '../utils/error.utils.js';
 import Logger from '../utils/logger.js';
+import { SECRETS } from './secrets.js';
 
 export const connectMongoDB = async () => {
   try {

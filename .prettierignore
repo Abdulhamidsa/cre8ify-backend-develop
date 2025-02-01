@@ -1,0 +1,16 @@
+# Ignore build output directories
+build
+dist
+
+# Ignore node modules
+node_modules
+
+# Ignore environment variable files
+.env
+.env.development
+
+# Ignore package lock file
+package-lock.json
+
+# Ignore VS Code settings
+.vscode

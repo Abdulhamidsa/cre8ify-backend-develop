@@ -19,6 +19,7 @@ export const getAllUsersService = async (page: number, limit: number) => {
         username: user.username,
         friendlyId: user.friendlyId,
         completedProfile: user.completedProfile,
+        profession: user.profession || null,
         profilePicture: user.profilePicture || null,
         createdAt: user.createdAt.toISOString(),
         updatedAt: user.updatedAt.toISOString(),

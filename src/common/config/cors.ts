@@ -1,4 +1,4 @@
-import { SECRETS } from './config.js';
+import { SECRETS } from './secrets.js';
 
 export const corsOptions = {
   origin: SECRETS.reactAppCorsOrigin,

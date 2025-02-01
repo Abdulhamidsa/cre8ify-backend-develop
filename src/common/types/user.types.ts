@@ -1,10 +1,5 @@
-import Links from '../data/constants/links.js';
 import Professions from '../data/constants/proffesions.js';
 
-type ILink = {
-  name: keyof typeof Links;
-  url: string;
-};
 export type IUserProfile = {
   userInfo: UserType;
   userCredential: IUserCredential;
@@ -27,7 +22,6 @@ export type IPersonalInfo = {
   profession?: typeof Professions;
   country: string;
   dateOfBirth: Date;
-  links: ILink[];
 };
 
 export type UserType = {

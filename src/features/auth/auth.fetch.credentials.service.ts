@@ -1,4 +1,4 @@
-import { getSQLClient } from '../../common/config/sql-client.js';
+import { getSQLClient } from '../../common/config/sql.client.js';
 import { AppError } from '../../common/errors/app.error.js';
 import { SQL_QUERIES } from '../../common/utils/sql.constants.js';
 

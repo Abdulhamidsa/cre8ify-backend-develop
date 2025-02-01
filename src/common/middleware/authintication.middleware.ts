@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 
 import { User } from '../../models/user.model.js';
-import { SECRETS } from '../config/config.js';
+import { SECRETS } from '../config/secrets.js';
 import { AppError } from '../errors/app.error.js';
 import { getCookieOptions } from '../utils/cookie.utils.js';
 import { getErrorMessage } from '../utils/error.utils.js';

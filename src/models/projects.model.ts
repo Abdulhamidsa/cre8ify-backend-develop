@@ -19,7 +19,6 @@ export interface ProjectDocument extends Document {
   updatedAt: Date;
 }
 
-// Define the schema
 const projectSchema: Schema<ProjectDocument> = new Schema(
   {
     userId: {

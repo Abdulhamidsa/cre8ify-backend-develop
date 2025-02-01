@@ -11,7 +11,7 @@ import { getUserProfileService } from './services/user.profile.service.js';
 export const handleGetAllUsers: RequestHandler = async (req, res, next) => {
   try {
     const page = parseInt(req.query.page as string, 10) || 1;
-    const limit = parseInt(req.query.limit as string, 10) || 12; // Default to 12 if undefined
+    const limit = parseInt(req.query.limit as string, 10) || 12;
 
     const users = await getAllUsersService(page, limit);
 

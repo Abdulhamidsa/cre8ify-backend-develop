@@ -1,6 +1,6 @@
 import { CookieOptions } from 'express';
 
-import { SECRETS } from '../config/config.js';
+import { SECRETS } from '../config/secrets.js';
 
 export const getCookieOptions = (tokenType: 'access' | 'refresh'): CookieOptions => {
   const commonOptions: CookieOptions = {

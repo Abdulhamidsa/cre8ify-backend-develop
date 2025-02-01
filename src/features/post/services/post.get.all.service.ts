@@ -1,6 +1,6 @@
 import { AppError } from '../../../common/errors/app.error.js';
-import { Post } from '../../../common/models/post.model.js';
 import { PostType } from '../../../common/types/types.js';
+import { Post } from '../../../models/post.model.js';
 
 export const fetchAllPostsService = async (
   { limit = 10, page = 1 }: { limit?: number; page?: number },

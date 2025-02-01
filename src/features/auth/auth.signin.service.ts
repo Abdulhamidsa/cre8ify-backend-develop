@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import mongoose from 'mongoose';
 
-import { ensureTablesExist, getSQLClient } from '../../common/config/sql-client.js';
+import sqlClient, { ensureTablesExist, getSQLClient } from '../../common/config/sql.client.js';
 import { AppError } from '../../common/errors/app.error.js';
 import { SignInResponse } from '../../common/types/user.types.js';
 import { getErrorMessage } from '../../common/utils/error.utils.js';
@@ -15,13 +15,13 @@ import { User } from '../../models/user.model.js';
 
 export const signInUser = async (data: SignInInput): Promise<ApiResponse<SignInResponse>> => {
   const { email, password } = data;
-  const sqlClient = await getSQLClient();
 
   try {
     let mongoRef = '';
     let friendlyId = '';
     let userId: string = '';
 
+    const sqlClient = await getSQLClient();
     // Ensure the necessary tables exist
     await ensureTablesExist();
 
@@ -65,6 +65,6 @@ export const signInUser = async (data: SignInInput): Promise<ApiResponse<SignInR
     Logger.error(`Error during user sign-in: ${getErrorMessage(error)}`);
     throw error;
   } finally {
-    sqlClient.release();
+    await sqlClient.end();
   }
 };

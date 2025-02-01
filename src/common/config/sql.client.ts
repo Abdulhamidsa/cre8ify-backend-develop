@@ -4,7 +4,7 @@ import { PoolClient } from 'pg';
 import { AppError } from '../errors/app.error.js';
 import { getErrorMessage } from '../utils/error.utils.js';
 import { SQL_QUERIES } from '../utils/sql.constants.js';
-import { SECRETS } from './config.js';
+import { SECRETS } from './secrets.js';
 
 const { Pool } = pkg;
 
@@ -30,7 +30,7 @@ export const getSQLClient = async (): Promise<PoolClient> => {
   }
 };
 
-// Function to check and create tables if they don't exist
+// check and create tables if they don't exist
 export const ensureTablesExist = async (): Promise<void> => {
   const sqlClient = await getSQLClient();
 
@@ -44,17 +44,6 @@ export const ensureTablesExist = async (): Promise<void> => {
     throw new AppError(getErrorMessage(error), 500);
   } finally {
     sqlClient.release();
-  }
-};
-
-// Health check function for PostgreSQL
-export const checkPostgresHealth = async (): Promise<void> => {
-  try {
-    const client = await getSQLClient();
-    await client.query('SELECT NOW()');
-    client.release();
-  } catch (error) {
-    throw new AppError(getErrorMessage(error), 500);
   }
 };
 

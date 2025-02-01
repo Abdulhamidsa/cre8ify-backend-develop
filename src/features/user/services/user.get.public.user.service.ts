@@ -15,7 +15,7 @@ export const getPublicUserProfileService = async (friendlyId: string): Promise<P
       username: user.username,
       profilePicture: user.profilePicture || '',
       bio: user.bio || '',
-      createdAt: user.createdAt.toISOString(),
+      createdAt: user.createdAt,
     };
   } catch (error) {
     Logger.error(`Error fetching public user profile for friendlyId ${friendlyId}:`, error);
