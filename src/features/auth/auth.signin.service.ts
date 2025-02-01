@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import mongoose from 'mongoose';
 
 import sqlClient, { ensureTablesExist, getSQLClient } from '../../common/config/sql.client.js';
