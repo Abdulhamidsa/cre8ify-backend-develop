@@ -31,7 +31,7 @@ app.use(cors(corsOptions));
 app.get('/', (_req: Request, res: Response) => {
   res.send('SERVER IS RUNNING');
 });
-app.use('/api', routes);
+app.use('/', routes);
 // Error handling middleware
 app.use(expressErrorMiddleware);
 // Start function
