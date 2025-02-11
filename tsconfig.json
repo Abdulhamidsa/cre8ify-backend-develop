@@ -12,7 +12,6 @@
     "skipLibCheck": true, // Skip checking type declaration files
     "allowSyntheticDefaultImports": true, // Allow default imports for modules without a default export
     "noImplicitAny": true, // Raise errors for implicit `any` types
-    "strictPropertyInitialization": false,
     "strictNullChecks": true, // Enable strict null checks
     "noUnusedLocals": true, // Error on unused local variables
     "noUnusedParameters": true, // Error on unused function parameters

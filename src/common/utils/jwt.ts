@@ -1,4 +1,4 @@
-import jwt, { JsonWebTokenError, JwtPayload } from 'jsonwebtoken';
+import jwt, { JsonWebTokenError, JwtPayload, SignOptions } from 'jsonwebtoken';
 
 import { SECRETS } from '../config/secrets.js';
 import { AppError } from '../errors/app.error.js';
@@ -11,8 +11,10 @@ interface UserPayload {
   friendlyId: string;
 }
 
-const createToken = (payload: UserPayload, secret: string, expiresIn: string): string => {
-  return jwt.sign(payload, secret, { expiresIn });
+const createToken = (payload: UserPayload, secret: string, expiresIn: string | number): string => {
+  const options: SignOptions = { expiresIn: expiresIn as SignOptions['expiresIn'] };
+  console.log('options', options);
+  return jwt.sign(payload, secret, options);
 };
 
 export const generateAccessToken = (payload: UserPayload): string => {
@@ -62,7 +64,6 @@ export const verifyToken = async (token: string, tokenType: 'access' | 'refresh'
   if (!token) {
     throw new AppError('Token is required', 401);
   }
-
   const secret = getTokenSecret(tokenType);
   return validateToken(token, secret);
 };
@@ -73,6 +74,7 @@ export const generateTokens = async (
   userId: string,
 ): Promise<SignInResponse> => {
   if (!mongo_ref || !friendlyId || !userId) {
+    console.log(mongo_ref, friendlyId, userId);
     throw new AppError('Invalid input for token generation', 500);
   }
 

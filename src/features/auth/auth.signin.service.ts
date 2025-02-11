@@ -1,7 +1,6 @@
-import bcrypt from 'bcryptjs';
-import mongoose from 'mongoose';
+import bcrypt from 'bcrypt';
 
-import sqlClient, { ensureTablesExist, getSQLClient } from '../../common/config/sql.client.js';
+import { ensureTablesExist, getSQLClient } from '../../common/config/sql.client.js';
 import { AppError } from '../../common/errors/app.error.js';
 import { SignInResponse } from '../../common/types/user.types.js';
 import { getErrorMessage } from '../../common/utils/error.utils.js';
@@ -15,13 +14,13 @@ import { User } from '../../models/user.model.js';
 
 export const signInUser = async (data: SignInInput): Promise<ApiResponse<SignInResponse>> => {
   const { email, password } = data;
+  const sqlClient = await getSQLClient();
 
   try {
     let mongoRef = '';
     let friendlyId = '';
     let userId: string = '';
 
-    const sqlClient = await getSQLClient();
     // Ensure the necessary tables exist
     await ensureTablesExist();
 
@@ -39,25 +38,26 @@ export const signInUser = async (data: SignInInput): Promise<ApiResponse<SignInR
       const { password_hash, mongo_ref } = user;
       mongoRef = mongo_ref;
 
+      // Validate the password
       const isPasswordValid = await bcrypt.compare(password, password_hash);
       if (!isPasswordValid) {
         throw new AppError('Invalid email or password', 400);
       }
     });
 
-    const mongoUser = (await User.findOneAndUpdate(
-      { mongoRef },
-      { $setOnInsert: { email } },
-      { new: true, upsert: true, projection: 'friendlyId email _id' },
-    )) as { _id: mongoose.Types.ObjectId; friendlyId: string; email: string };
+    // Now after validating SQL, we interact with MongoDB
+    const mongoUser = await User.findOne({ mongoRef });
 
+    // If the MongoDB user doesn't exist, throw an error
     if (!mongoUser) {
       throw new AppError('MongoDB user not found', 500);
     }
 
+    // If the MongoDB user exists, update the necessary details if needed
     friendlyId = mongoUser.friendlyId;
     userId = mongoUser._id.toString();
 
+    // Generate tokens
     const { accessToken, refreshToken } = await generateTokens(mongoRef, friendlyId, userId);
 
     return createResponse(true, { mongo_ref: mongoRef, friendlyId, userId, accessToken, refreshToken });
@@ -65,6 +65,6 @@ export const signInUser = async (data: SignInInput): Promise<ApiResponse<SignInR
     Logger.error(`Error during user sign-in: ${getErrorMessage(error)}`);
     throw error;
   } finally {
-    await sqlClient.end();
+    sqlClient.release();
   }
 };

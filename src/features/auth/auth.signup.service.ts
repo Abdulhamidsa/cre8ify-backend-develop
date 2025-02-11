@@ -13,8 +13,8 @@ export const signUpUserService = async (data: SignUpInput): Promise<void> => {
     email,
     password,
     username,
-    age = null, // Optional: Use null for `age` if not provided
-    bio = '', // Default to an empty string if not provided
+    age = null,
+    bio = '',
     profilePicture = '',
     countryOrigin = '',
     profession = '',
@@ -43,7 +43,7 @@ export const signUpUserService = async (data: SignUpInput): Promise<void> => {
 
     const hashedPassword = await hashPassword(password);
     const mongoRef = generateMongoRef();
-    const friendlyId = generateFriendlyId(username || '');
+    const friendlyId = generateFriendlyId(username || email);
 
     // Insert user into SQL
     const sqlResult = await sqlClient.query(SQL_QUERIES.insertUser, [email, hashedPassword, mongoRef]);
@@ -65,11 +65,15 @@ export const signUpUserService = async (data: SignUpInput): Promise<void> => {
     });
 
     if (!mongoUser) {
+      // If MongoDB insert fails, we need to rollback SQL changes
+      await sqlClient.query('ROLLBACK');
       throw new AppError('Failed to create user in MongoDB', 500);
     }
 
+    // Commit the transaction if both SQL and MongoDB operations succeed
     await sqlClient.query('COMMIT');
   } catch (error) {
+    // Rollback in case of any error
     await sqlClient.query('ROLLBACK');
     Logger.error('Error during user signup', error);
     throw error;
