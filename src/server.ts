@@ -14,6 +14,7 @@ import routes from './routes/index.js';
 const app = express();
 const PORT = SECRETS.port;
 // Rate limiter middleware
+app.set('trust proxy', true);
 const limiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
   max: 100, // Limit each IP to 100 requests per `window`
@@ -24,6 +25,7 @@ const limiter = rateLimit({
 // Middlewares
 app.use(cookieParser());
 app.use(bodyParser.json());
+
 app.use(limiter);
 app.use(express.json());
 app.use(cors(corsOptions));
