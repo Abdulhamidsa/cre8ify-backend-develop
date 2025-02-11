@@ -14,19 +14,34 @@ import routes from './routes/index.js';
 const app = express();
 const PORT = SECRETS.port;
 // Rate limiter middleware
+// At the top of your server file, after creating the Express app:
 app.set('trust proxy', true);
-const limiter = rateLimit({
-  windowMs: 60 * 1000, // 1 minute
-  max: 100, // Limit each IP to 100 requests per `window`
-  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-});
+
+// Then, when you set up express-rate-limit:
+app.use(
+  rateLimit({
+    windowMs: 60 * 1000, // 1 minute
+    max: 100, // limit each IP to 100 requests per window
+    standardHeaders: true,
+    legacyHeaders: false,
+    keyGenerator: (req) => {
+      // Check for x-forwarded-for header (Vercel sends this)
+      const xForwardedFor = req.headers['x-forwarded-for'];
+      if (xForwardedFor) {
+        // If there are multiple IPs, take the first one.
+        return (Array.isArray(xForwardedFor) ? xForwardedFor[0] : xForwardedFor).split(',')[0].trim();
+      }
+      // Fallback to req.ip or connection remoteAddress
+      return req.ip || (req.connection && req.connection.remoteAddress) || '';
+    },
+  }),
+);
 
 // Middlewares
 app.use(cookieParser());
 app.use(bodyParser.json());
 
-app.use(limiter);
+// app.use(limiter);
 app.use(express.json());
 app.use(cors(corsOptions));
 // Routes
