@@ -31,6 +31,10 @@ app.use(cors(corsOptions));
 app.get('/', (_req: Request, res: Response) => {
   res.send('SERVER IS RUNNING');
 });
+app.get('/ping', (_req, res) => {
+  res.send('pong');
+});
+
 app.use('/', routes);
 // Error handling middleware
 app.use(expressErrorMiddleware);
