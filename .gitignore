@@ -29,7 +29,7 @@ lib-cov/
 coverage/
 *.lcov
  
-src/common/config/secrets.ts
+# src/common/config/secrets.ts
 
 # TypeScript
 *.tsbuildinfo
