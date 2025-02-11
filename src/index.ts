@@ -1,3 +1,5 @@
 import { start } from './server.js';
 
-start();
+if (process.env.NODE_ENV !== 'serverless') {
+  start();
+}
