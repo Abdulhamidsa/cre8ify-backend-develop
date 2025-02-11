@@ -1,5 +1,5 @@
-import { start } from './server.js';
+// import { start } from './server.js';
 
-if (!process.env.VERCEL) {
-  start();
-}
+// if (!process.env.VERCEL) {
+//   start();
+// }
