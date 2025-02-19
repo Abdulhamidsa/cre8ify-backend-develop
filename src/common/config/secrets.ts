@@ -35,4 +35,6 @@ export const SECRETS = {
   sentryDsn: process.env.SENTRY_DSN || '',
   apiBaseUrl: process.env.API_BASE_URL || 'http://localhost:5173',
   frontendAppUrl: process.env.FRONTEND_APP_URL || 'http://localhost:5173',
+  openaiApiKey: process.env.OPENAI_API_KEY,
+  geminiApiKey: process.env.GEMINI_API_KEY,
 };
