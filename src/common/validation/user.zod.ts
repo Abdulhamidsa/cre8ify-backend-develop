@@ -52,6 +52,7 @@ export const userResponeSchema = z.object({
   username: z.string().optional(),
   profilePicture: z.string().optional(),
   age: z.number().nullable(),
+  profession: z.string().optional(),
   bio: z.string().optional(),
   createdAt: z.date(),
 });
