@@ -10,7 +10,7 @@ import { getUserProjectsService } from './services/project.get.project.service.j
 import { getUserProjectsByFriendlyId } from './services/project.user.getById.service.js';
 
 export const handleAddProject: RequestHandler = async (req, res, next) => {
-  const mongoRef = res.locals.mongoRef; // Assuming user identity is in res.locals
+  const mongoRef = res.locals.mongoRef;
   const validatedData = req.body;
 
   try {
