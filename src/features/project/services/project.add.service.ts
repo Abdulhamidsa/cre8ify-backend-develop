@@ -11,17 +11,43 @@ export const addProjectService = async (mongoRef: string, projectData: AddProjec
     const user = await User.findOne({ mongoRef }).lean();
     if (!user) throw new AppError('User not found', 404);
 
+    // Limit the number of images to 4
+    if (projectData.media && projectData.media.length > 5) {
+      console.log(projectData.media.length);
+      console.log(projectData.media);
+
+      throw new AppError('You can only upload a maximum of 5 images', 400);
+    }
+
+    // Ensure only 1 thumbnail is provided
+    if (projectData.thumbnail && typeof projectData.thumbnail !== 'string') {
+      throw new AppError('Invalid thumbnail format', 400);
+    }
+
+    const mediaTransformations = [
+      { width: 800, crop: 'limit' },
+      { quality: 'auto', fetch_format: 'auto' },
+    ];
+    const thumbnailTransformations = [
+      { width: 800, crop: 'limit' },
+      { quality: 'auto', fetch_format: 'auto' },
+    ];
+
     const uploadedMedia = await Promise.all(
-      (projectData.media || []).map(async (image) => ({
-        url: await saveImageToCloudinary(image.url, 'projects/images', [{ quality: 90, width: 800, crop: 'limit' }]),
-      })),
+      (projectData.media || []).map(async (image) => {
+        if (!image.url.includes('res.cloudinary.com')) {
+          // ✅ Only upload new ones
+          return { url: await saveImageToCloudinary(image.url, 'projects/images', mediaTransformations) };
+        }
+        return { url: image.url }; // ✅ Keep existing images
+      }),
     );
 
-    const thumbnailUrl = projectData.thumbnail
-      ? await saveImageToCloudinary(projectData.thumbnail, 'projects/thumbnails', [
-          { quality: 'auto', width: 800, crop: 'limit' },
-        ])
-      : '';
+    const thumbnailUrl = projectData.thumbnail?.includes('res.cloudinary.com')
+      ? projectData.thumbnail
+      : projectData.thumbnail
+        ? await saveImageToCloudinary(projectData.thumbnail, 'projects/thumbnails', thumbnailTransformations)
+        : undefined;
 
     const tagIds = await Promise.all(
       (projectData.tags || []).map(async (tagName) => {
@@ -37,7 +63,6 @@ export const addProjectService = async (mongoRef: string, projectData: AddProjec
       tags: tagIds.map((tag) => tag.id),
       userId: user._id,
     });
-
     const transformedProject: AddProjectInput = {
       title: newProject.title,
       description: newProject.description,
