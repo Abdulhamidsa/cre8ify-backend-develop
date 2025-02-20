@@ -1,9 +1,9 @@
 import { RequestHandler } from 'express';
 
-import { AppError } from '../../common/errors/app.error';
-import { chatWithAI } from '../../common/utils/open.ai.config';
-import { getUserProfileService } from '../user/services/user.profile.service';
-import { getUserProjectsService } from './services/project.get.project.service';
+import { AppError } from '../../common/errors/app.error.js';
+import { chatWithAI } from '../../common/utils/open.ai.config.js';
+import { getUserProfileService } from '../user/services/user.profile.service.js';
+import { getUserProjectsService } from './services/project.get.project.service.js';
 
 export const handleAIChat: RequestHandler = async (req, res, next): Promise<void> => {
   try {
