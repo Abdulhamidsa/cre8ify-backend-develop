@@ -2,7 +2,7 @@ import mongoose, { Document, Model, Schema, Types } from 'mongoose';
 
 export interface CommentSubdoc {
   _id: Types.ObjectId;
-  userId: Types.ObjectId;
+  userId: Types.ObjectId | PopulatedUser; // ✅ Allow both ObjectId and populated user
   text: string;
   createdAt: Date;
 }
@@ -14,23 +14,17 @@ export interface PostBase {
   updatedAt: Date;
 }
 
-// Define the unpopulated `userId` type
 export interface PostDocument extends PostBase, Document {
-  userId: Types.ObjectId;
+  userId: Types.ObjectId | PopulatedUser; // ✅ Allow both
   likes: Types.ObjectId[];
   comments: CommentSubdoc[];
 }
 
-// Define the populated `userId` type
 export interface PopulatedPostDocument extends PostBase, Document {
-  userId: {
-    _id: string;
-    username: string;
-    profilePicture: string;
-  };
+  userId: PopulatedUser;
   comments: Array<{
     _id: string;
-    userId: { _id: string; username: string; profilePicture: string };
+    userId: PopulatedUser;
     text: string;
     createdAt: Date;
   }>;
@@ -105,3 +99,29 @@ const postSchema: Schema<PostDocument> = new Schema(
 );
 
 export const Post: Model<PostDocument> = mongoose.model<PostDocument>('Post', postSchema);
+
+export interface PopulatedUser {
+  _id: string;
+  username: string;
+  profilePicture: string;
+}
+
+export interface CommentSubdoc {
+  _id: Types.ObjectId;
+  userId: Types.ObjectId | PopulatedUser; // ✅ Allow both ObjectId and populated user
+  text: string;
+  createdAt: Date;
+}
+
+export interface PostBase {
+  content?: string;
+  image?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface PostDocument extends PostBase, Document {
+  userId: Types.ObjectId | PopulatedUser; // ✅ Allow both
+  likes: Types.ObjectId[];
+  comments: CommentSubdoc[];
+}
