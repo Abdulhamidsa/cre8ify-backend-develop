@@ -28,7 +28,7 @@ export const SECRETS = {
   projectThumbnailsFolder: process.env.CLOUDINARY_PROJECT_THUMBNAILS_FOLDER || 'projects/thumbnails',
   imageQuality: 90,
   thumbnailQuality: 'auto',
-  cookieSecure: process.env.COOKIE_SECURE === 'true', // False in development
+  cookieSecure: process.env.COOKIE_SECURE === 'true',
   cookieHttpOnly: process.env.COOKIE_HTTP_ONLY === 'true',
   cookieSameSite: process.env.COOKIE_SAME_SITE || 'lax', // Less strict in development
   rateLimitWindowMs: process.env.RATE_LIMIT_WINDOW_MS ? parseInt(process.env.RATE_LIMIT_WINDOW_MS) : 60000, // 1 minute
