@@ -1,11 +1,18 @@
 import { SECRETS } from './secrets.js';
 
+const allowedOrigins = [SECRETS.reactAppCorsOrigin, SECRETS.nextCorsOrigin].filter((origin) => !!origin); // This filters out any undefined or empty values
+
 export const corsOptions = {
-  origin: SECRETS.reactAppCorsOrigin,
-  credentials: true, //  include cookies in  requests
+  origin: (origin: string, callback: (arg0: Error | null, arg1: boolean | undefined) => void) => {
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`CORS not allowed for ${origin}`), false);
+    }
+  },
+  credentials: true,
   optionsSuccessStatus: 200,
   allowedHeaders: ['Content-Type', 'Authorization'],
-  // methods: 'GET, PUT, POST, DELETE',
-  // preflightContinue: false,
-  // maxAge: 86400, // max age of 1 day for caching preflight requests in browser to reduce server load
 };

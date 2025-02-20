@@ -17,6 +17,7 @@ export const SECRETS = {
     ? parseInt(process.env.REFRESHTOKEN_MAXAGE)
     : 7 * 24 * 60 * 60 * 1000, // 7 days
   reactAppCorsOrigin: process.env.REACT_APP_CORS_ORIGIN || 'http://localhost:5173',
+  nextCorsOrigin: process.env.NEXT_CORS_ORIGIN || 'http://localhost:3000',
   dbPoolMin: process.env.DB_POOL_MIN ? parseInt(process.env.DB_POOL_MIN) : 1,
   dbPoolMax: process.env.DB_POOL_MAX ? parseInt(process.env.DB_POOL_MAX) : 5,
   logLevel: process.env.LOG_LEVEL || 'debug',
@@ -35,6 +36,7 @@ export const SECRETS = {
   sentryDsn: process.env.SENTRY_DSN || '',
   apiBaseUrl: process.env.API_BASE_URL || 'http://localhost:5173',
   frontendAppUrl: process.env.FRONTEND_APP_URL || 'http://localhost:5173',
+
   openaiApiKey: process.env.OPENAI_API_KEY,
   geminiApiKey: process.env.GEMINI_API_KEY,
 };
