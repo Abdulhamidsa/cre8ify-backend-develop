@@ -34,6 +34,10 @@ export interface Project {
  * Expected AI API Response
  */
 export interface AIResponse {
+  monetizationStrategies: boolean;
+  similarProjects: boolean;
+  audienceAnalysis: boolean;
+  improvements: boolean;
   success: boolean;
   message?: string;
   data?: { title: string; description: string }[];
