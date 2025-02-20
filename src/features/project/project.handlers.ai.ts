@@ -1,39 +1,14 @@
 import { RequestHandler } from 'express';
 
-import { AppError } from '../../common/errors/app.error.js';
-import { chatWithAI } from '../../common/utils/open.ai.config.js';
-import { getUserProfileService } from '../user/services/user.profile.service.js';
-import { getUserProjectsService } from './services/project.get.project.service.js';
+import { AppError } from '../../common/errors/app.error';
+import { chatWithAI } from '../../common/utils/open.ai.config';
+import { getUserProfileService } from '../user/services/user.profile.service';
+import { getUserProjectsService } from './services/project.get.project.service';
 
-type ChatStep = 'list-projects' | 'select-project' | 'choose-action' | 'finished';
-
-type ChatMode = 'ideas' | 'improve' | 'similar' | 'weaknesses' | 'expansion' | 'monetize' | 'audience' | 'rewrite';
-
-interface Project {
-  title: string;
-  description: string;
-}
-
-interface AIChatRequestBody {
-  message: string;
-  step?: ChatStep;
-  selectedProject?: string;
-  lastMode?: ChatMode;
-}
-
-interface AIResponse {
-  success: boolean;
-  message?: string;
-  data?: Project[];
-}
-
-/**
- * Express route handler for AI-based project discussions.
- */
 export const handleAIChat: RequestHandler = async (req, res, next): Promise<void> => {
   try {
-    const userId: string | undefined = res.locals.mongoRef;
-    const { message, step, selectedProject, lastMode }: AIChatRequestBody = req.body;
+    const userId = res.locals.mongoRef;
+    const { message, step, selectedProject } = req.body;
 
     if (!userId) {
       next(new AppError('Unauthorized: User not found', 401));
@@ -43,14 +18,32 @@ export const handleAIChat: RequestHandler = async (req, res, next): Promise<void
     // Fetch user's projects and profile
     const projects = await getUserProjectsService(userId);
     const userProfile = await getUserProfileService(userId);
-    const profession: string = userProfile.profession?.trim() || 'general user';
+    const profession = userProfile.profession?.trim() || 'general user';
 
-    // **Step 1: List Projects**
+    // Step 1: List Projects
     if (!step || step === 'list-projects') {
-      const projectAnalysis = projects.map((project) => ({
-        title: project.title,
-        description: project.description,
-      }));
+      const isMeaningfulText = (text: string): boolean => {
+        const words = text.trim().split(/\s+/);
+        return words.length > 1 && words.some((word) => word.length > 3);
+      };
+
+      const genericTitles = ['my project', 'untitled project', 'new project', 'default project'];
+
+      const projectAnalysis = projects.map((project) => {
+        const hasGenericTitle = genericTitles.includes(project.title.toLowerCase());
+        const hasUnclearTitle = !isMeaningfulText(project.title) || hasGenericTitle;
+        const hasUnclearDescription = !isMeaningfulText(project.description);
+
+        const isUnclear = hasUnclearTitle || hasUnclearDescription;
+
+        return {
+          title: project.title,
+          status: isUnclear ? 'Needs improvement' : 'Good',
+          suggestion: isUnclear
+            ? 'Consider renaming the title and adding a clear description to make the project more understandable.'
+            : 'Looks well-defined!',
+        };
+      });
 
       res.json({
         success: true,
@@ -61,7 +54,7 @@ export const handleAIChat: RequestHandler = async (req, res, next): Promise<void
       return;
     }
 
-    // **Step 2: Project Selection**
+    // Step 2: Project Selected
     if (step === 'select-project') {
       const selected = projects.find((p) => p.title.toLowerCase() === selectedProject?.toLowerCase());
 
@@ -73,13 +66,16 @@ export const handleAIChat: RequestHandler = async (req, res, next): Promise<void
         return;
       }
 
-      const options: string[] = [
-        '1. Suggest improvements',
-        '2. Find similar projects',
-        '3. How can I expand this project?',
-        '4. How can I monetize this?',
-        '5. Who is my target audience?',
-      ];
+      const isUnclear = selected.title.length < 5 || selected.description.length < 10;
+      const options = isUnclear
+        ? ['1. Rewrite my project title & description', '2. Suggest improvements']
+        : [
+            '1. Suggest improvements',
+            '2. Find similar projects',
+            '3. How can I expand this project?',
+            '4. How can I monetize this?',
+            '5. Who is my target audience?',
+          ];
 
       res.json({
         success: true,
@@ -90,47 +86,55 @@ export const handleAIChat: RequestHandler = async (req, res, next): Promise<void
       return;
     }
 
-    // **Step 3: Handle User's Action**
-    let aiResponse: AIResponse;
-
+    // Step 3: Handle User's Action
     if (step === 'choose-action' || step === 'finished') {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let response: any;
+
       if (message.trim().toLowerCase() === 'refresh') {
-        if (!lastMode) {
-          res.status(400).json({ success: false, message: 'Missing lastMode for refresh.' });
+        if (!req.body.lastMode) {
+          res.json({ success: false, message: 'Missing lastMode for refresh.' });
           return;
         }
-        aiResponse = await chatWithAI(
-          [{ title: selectedProject ?? '', description: '' }],
+        response = await chatWithAI(
+          [{ title: selectedProject, description: '' }],
           profession,
           'refresh',
-          lastMode,
+          req.body.lastMode,
         );
+      } else if (message.includes('rewrite')) {
+        response = await chatWithAI([{ title: selectedProject, description: '' }], profession, 'rewrite');
+      } else if (message.includes('improve')) {
+        response = await chatWithAI([{ title: selectedProject, description: '' }], profession, 'improve');
+      } else if (message.includes('similar')) {
+        response = await chatWithAI([{ title: selectedProject, description: '' }], profession, 'similar');
+      } else if (message.includes('weaknesses')) {
+        response = await chatWithAI([{ title: selectedProject, description: '' }], profession, 'weaknesses');
+      } else if (message.includes('expansion')) {
+        response = await chatWithAI([{ title: selectedProject, description: '' }], profession, 'expansion');
+      } else if (message.includes('monetize')) {
+        response = await chatWithAI([{ title: selectedProject, description: '' }], profession, 'monetize');
+      } else if (message.includes('audience')) {
+        response = await chatWithAI([{ title: selectedProject, description: '' }], profession, 'audience');
       } else {
-        const actionMap: Record<string, ChatMode> = {
-          rewrite: 'rewrite',
-          improve: 'improve',
-          similar: 'similar',
-          weaknesses: 'weaknesses',
-          expansion: 'expansion',
-          monetize: 'monetize',
-          audience: 'audience',
-        };
-
-        const action = Object.keys(actionMap).find((key) => message.toLowerCase().includes(key));
-        if (!action) {
-          res.json({ success: false, message: "I didn't understand that. Choose one of the available options." });
-          return;
-        }
-
-        aiResponse = await chatWithAI(
-          [{ title: selectedProject ?? '', description: '' }],
-          profession,
-          actionMap[action],
-        );
+        res.json({ success: false, message: "I didn't understand that. Choose one of the available options." });
+        return;
       }
 
-      // **Merge all possible results into a single data array**
-      const dataArray: Project[] = aiResponse.data ?? [];
+      // Merge all results into a single data array
+      const dataArray: { title: string; description: string }[] = [];
+      if (response.improvements && response.improvements.length > 0) {
+        dataArray.push(...response.improvements);
+      }
+      if (response.monetizationStrategies && response.monetizationStrategies.length > 0) {
+        dataArray.push(...response.monetizationStrategies);
+      }
+      if (response.similarProjects && response.similarProjects.length > 0) {
+        dataArray.push(...response.similarProjects);
+      }
+      if (response.audienceAnalysis && response.audienceAnalysis.length > 0) {
+        dataArray.push(...response.audienceAnalysis);
+      }
 
       res.json({
         success: true,
@@ -141,7 +145,8 @@ export const handleAIChat: RequestHandler = async (req, res, next): Promise<void
       return;
     }
 
-    res.status(400).json({ success: false, message: 'Invalid step. Restart the conversation.' });
+    res.json({ success: false, message: 'Invalid step. Restart the conversation.' });
+    return;
   } catch (error) {
     next(error);
   }
