@@ -9,6 +9,7 @@ export const fetchAllPostsService = async (
   const query: Record<string, unknown> = {};
 
   try {
+    // Ensure `createdAt` is indexed for faster sorting
     const totalPosts = await Post.countDocuments(query);
     const totalPages = Math.ceil(totalPosts / limit);
 
@@ -20,12 +21,12 @@ export const fetchAllPostsService = async (
       };
     }
 
-    const options = {
-      limit,
-      skip: (page - 1) * limit,
-    };
-
-    const posts = await Post.find(query, null, options)
+    // Optimized query
+    const posts = await Post.find(query)
+      .select('_id content image createdAt updatedAt userId likes comments') // ✅ Use `.select()` instead of projection
+      .sort({ createdAt: -1 }) // ✅ Sorting is optimized with index
+      .limit(limit)
+      .skip((page - 1) * limit)
       .populate([
         { path: 'userId', select: '_id username profilePicture profession friendlyId' },
         { path: 'comments.userId', select: '_id username profilePicture' },
@@ -37,7 +38,7 @@ export const fetchAllPostsService = async (
       id: post._id.toString(),
       likedByUser: Array.isArray(post.likes) ? post.likes.some((likeId) => likeId.toString() === userId) : false,
       likesCount: Array.isArray(post.likes) ? post.likes.length : 0,
-    })) as unknown as PostType[];
+    })) as PostType[];
 
     return {
       posts: mappedPosts,
