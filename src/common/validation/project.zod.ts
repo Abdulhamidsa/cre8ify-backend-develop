@@ -18,6 +18,7 @@ const userSchema = z.object({
     .default(null),
   profession: z.string().min(1, 'Profession is required.').default('Not specified'),
   friendlyId: z.string().min(1, 'Friendly ID is required.'),
+  completedProfile: z.boolean(),
 });
 
 export const fetchedProjectSchema = z.object({
