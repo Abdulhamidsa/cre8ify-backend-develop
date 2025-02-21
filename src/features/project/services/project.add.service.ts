@@ -10,16 +10,12 @@ export const addProjectService = async (mongoRef: string, projectData: AddProjec
   try {
     const user = await User.findOne({ mongoRef }).lean();
     if (!user) throw new AppError('User not found', 404);
-
-    // Limit the number of images to 4
     if (projectData.media && projectData.media.length > 5) {
       console.log(projectData.media.length);
       console.log(projectData.media);
 
       throw new AppError('You can only upload a maximum of 5 images', 400);
     }
-
-    // Ensure only 1 thumbnail is provided
     if (projectData.thumbnail && typeof projectData.thumbnail !== 'string') {
       throw new AppError('Invalid thumbnail format', 400);
     }
@@ -36,13 +32,11 @@ export const addProjectService = async (mongoRef: string, projectData: AddProjec
     const uploadedMedia = await Promise.all(
       (projectData.media || []).map(async (image) => {
         if (!image.url.includes('res.cloudinary.com')) {
-          // ✅ Only upload new ones
           return { url: await saveImageToCloudinary(image.url, 'projects/images', mediaTransformations) };
         }
-        return { url: image.url }; // ✅ Keep existing images
+        return { url: image.url };
       }),
     );
-
     const thumbnailUrl = projectData.thumbnail?.includes('res.cloudinary.com')
       ? projectData.thumbnail
       : projectData.thumbnail

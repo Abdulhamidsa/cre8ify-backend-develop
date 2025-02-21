@@ -1,6 +1,6 @@
 import { CorsOptions } from 'cors';
 
-import { SECRETS } from './secrets';
+import { SECRETS } from './secrets.js';
 
 // Combine your separate allowed origins into an array and filter out any undefined/empty values
 const allowedOrigins: string[] = [SECRETS.reactAppCorsOrigin, SECRETS.nextCorsOrigin].filter(

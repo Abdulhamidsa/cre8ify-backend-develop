@@ -14,28 +14,21 @@ export const handleAIChat: RequestHandler = async (req, res, next): Promise<void
       next(new AppError('Unauthorized: User not found', 401));
       return;
     }
-
-    // Fetch user's projects and profile
     const projects = await getUserProjectsService(userId);
     const userProfile = await getUserProfileService(userId);
     const profession = userProfile.profession?.trim() || 'general user';
-
-    // Step 1: List Projects
     if (!step || step === 'list-projects') {
       const isMeaningfulText = (text: string): boolean => {
         const words = text.trim().split(/\s+/);
         return words.length > 1 && words.some((word) => word.length > 3);
       };
-
       const genericTitles = ['my project', 'untitled project', 'new project', 'default project'];
 
       const projectAnalysis = projects.map((project) => {
         const hasGenericTitle = genericTitles.includes(project.title.toLowerCase());
         const hasUnclearTitle = !isMeaningfulText(project.title) || hasGenericTitle;
         const hasUnclearDescription = !isMeaningfulText(project.description);
-
         const isUnclear = hasUnclearTitle || hasUnclearDescription;
-
         return {
           title: project.title,
           status: isUnclear ? 'Needs improvement' : 'Good',
@@ -44,7 +37,6 @@ export const handleAIChat: RequestHandler = async (req, res, next): Promise<void
             : 'Looks well-defined!',
         };
       });
-
       res.json({
         success: true,
         step: 'select-project',
@@ -53,8 +45,6 @@ export const handleAIChat: RequestHandler = async (req, res, next): Promise<void
       });
       return;
     }
-
-    // Step 2: Project Selected
     if (step === 'select-project') {
       const selected = projects.find((p) => p.title.toLowerCase() === selectedProject?.toLowerCase());
 
@@ -65,7 +55,6 @@ export const handleAIChat: RequestHandler = async (req, res, next): Promise<void
         });
         return;
       }
-
       const isUnclear = selected.title.length < 5 || selected.description.length < 10;
       const options = isUnclear
         ? ['1. Rewrite my project title & description', '2. Suggest improvements']
@@ -76,7 +65,6 @@ export const handleAIChat: RequestHandler = async (req, res, next): Promise<void
             '4. How can I monetize this?',
             '5. Who is my target audience?',
           ];
-
       res.json({
         success: true,
         step: 'choose-action',
@@ -85,8 +73,6 @@ export const handleAIChat: RequestHandler = async (req, res, next): Promise<void
       });
       return;
     }
-
-    // Step 3: Handle User's Action
     if (step === 'choose-action' || step === 'finished') {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let response: any;
@@ -120,8 +106,6 @@ export const handleAIChat: RequestHandler = async (req, res, next): Promise<void
         res.json({ success: false, message: "I didn't understand that. Choose one of the available options." });
         return;
       }
-
-      // Merge all results into a single data array
       const dataArray: { title: string; description: string }[] = [];
       if (response.improvements && response.improvements.length > 0) {
         dataArray.push(...response.improvements);

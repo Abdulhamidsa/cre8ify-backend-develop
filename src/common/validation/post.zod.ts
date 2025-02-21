@@ -25,17 +25,19 @@ export const fetchAllPostsSchema = z.object({
   limit: z
     .union([z.string(), z.number()])
     .optional()
-    .transform((val) => (val !== undefined ? Number(val) : undefined)) // Transform to number if defined
+    .transform((val) => (val !== undefined ? Number(val) : undefined))
     .refine((val) => val === undefined || (Number.isInteger(val) && val > 0), {
       message: 'Limit must be a positive integer.',
     }),
   page: z
     .union([z.string(), z.number()])
     .optional()
-    .transform((val) => (val !== undefined ? Number(val) : undefined)) // Transform to number if defined
+    .transform((val) => (val !== undefined ? Number(val) : undefined))
     .refine((val) => val === undefined || (Number.isInteger(val) && val > 0), {
       message: 'Page must be a positive integer.',
     }),
+  cursor: z.string().optional(),
+  lastId: z.string().optional(), // <-- Add this line
 });
 
 export type FetchAllPostsQuery = z.infer<typeof fetchAllPostsSchema>;

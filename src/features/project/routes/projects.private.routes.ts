@@ -6,7 +6,13 @@ import {
   editProjectValidationSchema,
   projectIdValidationSchema,
 } from '../../../common/validation/project.zod.js';
-import { handleAddProject, handleDeleteProject, handleEditProject, handleGetUserProjects } from '../project.handler.js';
+import {
+  handleAddProject,
+  handleDeleteProject,
+  handleEditProject,
+  handleGetAllUserProjects,
+  handleGetUserProjects,
+} from '../project.handler.js';
 import { handleAIChat } from '../project.handlers.ai.js';
 
 const router = Router();
@@ -24,5 +30,7 @@ router.delete('/project/:id', ValidZod(projectIdValidationSchema, 'params'), han
 
 // ai generate endpoint
 router.post('/ai/generate', handleAIChat);
+// toggle ai feedback
+router.post('/ai/toggle', handleGetAllUserProjects);
 
 export default router;

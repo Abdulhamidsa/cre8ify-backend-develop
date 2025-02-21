@@ -1,7 +1,8 @@
 import mongoose, { Document, Model, Schema } from 'mongoose';
 
-// Extend AddProject with Mongoose-specific fields
 export interface ProjectDocument extends Document {
+  _id: mongoose.Types.ObjectId;
+
   userId: mongoose.Types.ObjectId;
   title: string;
   description: string;
@@ -65,14 +66,14 @@ const projectSchema: Schema<ProjectDocument> = new Schema(
     toJSON: {
       virtuals: true,
       transform: async (_doc, ret) => {
-        delete ret.__v; // Remove __v globally
+        delete ret.__v; // remove __v globally
         return ret;
       },
     },
     toObject: {
       virtuals: true,
       transform: (_doc, ret) => {
-        delete ret.__v; // Remove __v globally
+        delete ret.__v; // remove __v globally
         return ret;
       },
     },

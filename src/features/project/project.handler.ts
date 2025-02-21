@@ -7,6 +7,7 @@ import { deleteProjectService } from './services/project.delete.service.js';
 import { editProjectService } from './services/project.edit.service.js';
 import { getAllProjectsService } from './services/project.get.all.service.js';
 import { getUserProjectsService } from './services/project.get.project.service.js';
+import { getAllUserProjectsService } from './services/project.toggle.ai.service.js';
 import { getUserProjectsByFriendlyId } from './services/project.user.getById.service.js';
 
 export const handleAddProject: RequestHandler = async (req, res, next) => {
@@ -43,20 +44,18 @@ export const handleGetUserPublicProjects: RequestHandler = async (req, res, next
     next(error);
   }
 };
-
 // edit user project
 export const handleEditProject: RequestHandler = async (req, res, next) => {
   try {
-    const mongoRef = res.locals.mongoRef; // Logged-in user's mongoRef
-    const projectId = req.params.id; // Project ID from route
-    const projectData = req.body; // Validated project data from request body
+    const mongoRef = res.locals.mongoRef;
+    const projectId = req.params.id;
+    const projectData = req.body;
     const updatedProject = await editProjectService(mongoRef, projectId, projectData);
     res.status(200).json(createResponse(true, updatedProject));
   } catch (error) {
     next(error);
   }
 };
-
 // delete user project
 export const handleDeleteProject: RequestHandler = async (req, res, next) => {
   try {
@@ -77,6 +76,17 @@ export const handleGetAllProjects: RequestHandler = async (req, res, next) => {
     const search = (req.query.search as string) || '';
 
     const projects = await getAllProjectsService(page, limit, search);
+    res.status(200).json(createResponse(true, projects));
+  } catch (error) {
+    next(error);
+  }
+};
+
+// toggle feedback ai
+export const handleGetAllUserProjects: RequestHandler = async (_req, res, next) => {
+  const mongoRef = res.locals.mongoRef;
+  try {
+    const projects = await getAllUserProjectsService(mongoRef);
     res.status(200).json(createResponse(true, projects));
   } catch (error) {
     next(error);
