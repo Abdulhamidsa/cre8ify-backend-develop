@@ -1,18 +1,20 @@
 import { User } from '../../../models/user.model.js';
 
-export const getAllUsersService = async (page: number, limit: number) => {
+export const getAllUsersService = async (page: number, limit: number, searchTerm?: string) => {
   try {
-    // Calculate the pagination offset
     const skip = (page - 1) * limit;
 
-    // Fetch users with pagination
-    const users = await User.find({}).skip(skip).limit(limit).lean().select('-__v');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const filter: Record<string, any> = {};
+    if (searchTerm && searchTerm.trim() !== '') {
+      filter.username = { $regex: searchTerm, $options: 'i' };
+    }
 
-    // Fetch total count for pagination
-    const total = await User.countDocuments();
+    const users = await User.find(filter).skip(skip).limit(limit).lean().select('-__v');
+
+    const total = await User.countDocuments(filter);
     const totalPages = Math.ceil(total / limit);
 
-    // Return users with pagination metadata, even if empty
     return {
       users: users.map((user) => ({
         id: user._id.toString(),
