@@ -12,15 +12,15 @@ export const handleGetAllUsers: RequestHandler = async (req, res, next) => {
   try {
     const page = parseInt(req.query.page as string, 10) || 1;
     const limit = parseInt(req.query.limit as string, 10) || 12;
+    const search = (req.query.search as string) || '';
 
-    const users = await getAllUsersService(page, limit);
+    const usersData = await getAllUsersService(page, limit, search);
 
-    res.status(200).json(createResponse(true, users));
+    res.status(200).json(createResponse(true, usersData));
   } catch (error) {
     next(error);
   }
 };
-
 // fetch user profile
 export const handleFetchUserProfile: RequestHandler = async (_req, res, next) => {
   const mongoRef = res.locals.mongoRef;
