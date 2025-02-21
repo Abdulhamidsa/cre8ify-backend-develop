@@ -8,15 +8,10 @@ export const getAllProjectsService = async (page: number, limit: number, search:
   try {
     const skip = (page - 1) * limit;
 
-    // ✅ Apply search filter if search term is provided
-    const searchFilter = search
-      ? { title: { $regex: search, $options: 'i' } } // Case-insensitive search on title
-      : {};
+    const searchFilter = search ? { title: { $regex: search, $options: 'i' } } : {};
 
-    // Fetch projects with optional search and pagination
-    const projects = await Project.find(searchFilter).skip(skip).limit(limit).lean().select('-__v'); // Exclude unnecessary fields
+    const projects = await Project.find(searchFilter).skip(skip).limit(limit).lean().select('-__v');
 
-    // If no projects, return empty array
     if (!projects || projects.length === 0) {
       return {
         projects: [],
@@ -28,12 +23,13 @@ export const getAllProjectsService = async (page: number, limit: number, search:
       };
     }
 
-    // Transform projects with tags and user data
     const transformedProjects = await Promise.all(
       projects.map(async (project) => {
         const tags = await Tag.find({ _id: { $in: project.tags } }).select('name');
         const user = project.userId
-          ? await User.findById(project.userId).select('username profilePicture profession friendlyId').lean()
+          ? await User.findById(project.userId)
+              .select('username profilePicture profession friendlyId completedProfile')
+              .lean()
           : null;
 
         return fetchProjectWithUser.parse({
@@ -50,6 +46,7 @@ export const getAllProjectsService = async (page: number, limit: number, search:
                 profilePicture: user.profilePicture || null,
                 profession: user.profession && user.profession.trim() !== '' ? user.profession : 'Not specified', // Ensure default value
                 friendlyId: user.friendlyId,
+                completedProfile: user.completedProfile,
               }
             : null,
           createdAt: project.createdAt,
@@ -58,7 +55,6 @@ export const getAllProjectsService = async (page: number, limit: number, search:
       }),
     );
 
-    // Return the results with pagination
     return {
       projects: transformedProjects,
       pagination: {
