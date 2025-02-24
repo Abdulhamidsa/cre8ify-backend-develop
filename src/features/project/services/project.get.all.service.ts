@@ -7,10 +7,15 @@ import { User } from '../../../models/user.model.js';
 export const getAllProjectsService = async (page: number, limit: number, search: string) => {
   try {
     const skip = (page - 1) * limit;
-
     const searchFilter = search ? { title: { $regex: search, $options: 'i' } } : {};
 
-    const projects = await Project.find(searchFilter).skip(skip).limit(limit).lean().select('-__v');
+    // Sort by newest first
+    const projects = await Project.find(searchFilter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean()
+      .select('-__v');
 
     if (!projects || projects.length === 0) {
       return {
@@ -44,7 +49,7 @@ export const getAllProjectsService = async (page: number, limit: number, search:
             ? {
                 username: user.username,
                 profilePicture: user.profilePicture || null,
-                profession: user.profession && user.profession.trim() !== '' ? user.profession : 'Not specified', // Ensure default value
+                profession: user.profession && user.profession.trim() !== '' ? user.profession : 'Not specified',
                 friendlyId: user.friendlyId,
                 completedProfile: user.completedProfile,
               }
