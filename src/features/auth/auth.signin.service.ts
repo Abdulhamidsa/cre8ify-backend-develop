@@ -21,13 +21,10 @@ export const signInUser = async (data: SignInInput): Promise<ApiResponse<SignInR
     let friendlyId = '';
     let userId: string = '';
 
-    // Ensure the necessary tables exist
     await ensureTablesExist();
 
-    // Log the sign-in attempt
     Logger.info(`Sign-in attempt for email: ${email}`);
 
-    // Use the transaction utility for SQL operations
     await withTransaction(sqlClient, async () => {
       const result = await sqlClient.query(SQL_QUERIES.getUserLogin, [email]);
       const user = result.rows[0];
@@ -38,26 +35,29 @@ export const signInUser = async (data: SignInInput): Promise<ApiResponse<SignInR
       const { password_hash, mongo_ref } = user;
       mongoRef = mongo_ref;
 
-      // Validate the password
       const isPasswordValid = await bcrypt.compare(password, password_hash);
       if (!isPasswordValid) {
         throw new AppError('Invalid email or password', 400);
       }
     });
 
-    // Now after validating SQL, we interact with MongoDB
     const mongoUser = await User.findOne({ mongoRef });
 
-    // If the MongoDB user doesn't exist, throw an error
     if (!mongoUser) {
       throw new AppError('MongoDB user not found', 500);
     }
 
-    // If the MongoDB user exists, update the necessary details if needed
+    if (mongoUser.active === false) {
+      throw new AppError('Account is deactivated. Please contact support to reactivate your account.', 403);
+    }
+
+    if (!mongoUser) {
+      throw new AppError('MongoDB user not found', 500);
+    }
+
     friendlyId = mongoUser.friendlyId;
     userId = mongoUser._id.toString();
 
-    // Generate tokens
     const { accessToken, refreshToken } = await generateTokens(mongoRef, friendlyId, userId);
 
     return createResponse(true, { mongo_ref: mongoRef, friendlyId, userId, accessToken, refreshToken });

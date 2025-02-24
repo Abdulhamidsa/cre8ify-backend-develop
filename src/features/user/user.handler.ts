@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 
 import { createResponse } from '../../common/utils/response.handler.js';
 import { getAllUsersService } from './services/user.all.service.js';
-import { deleteUserService } from './services/user.delete.service.js';
+import { deactivateUserService } from './services/user.delete.service.js';
 import { editUserProfileService } from './services/user.edit.service.js';
 import { getPublicUserProfileService } from './services/user.get.by.id.service.js';
 import { getUserMinimalInfoService } from './services/user.minimal.info.service.js';
@@ -63,18 +63,18 @@ export const handleEditUserProfile: RequestHandler = async (req, res, next): Pro
 };
 
 // delete user profile
-
 export const handleDeleteUser: RequestHandler = async (_req, res, next): Promise<void> => {
   try {
     const mongoRef = res.locals.mongoRef;
+    console.log('mongoRef', mongoRef);
 
     if (!mongoRef) {
       res.status(401).json(createResponse(false, 'User is not authenticated'));
       return;
     }
 
-    await deleteUserService(mongoRef);
-    res.status(200).json(createResponse(true, 'User account deleted successfully'));
+    await deactivateUserService(mongoRef);
+    res.status(200).json(createResponse(true, 'User account deactivated successfully'));
   } catch (error) {
     next(error);
   }

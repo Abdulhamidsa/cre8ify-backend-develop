@@ -13,7 +13,7 @@ const router = Router();
 
 router.get('/profile/:friendlyId', handleFetchUserProfile);
 router.put('/profile', ValidZod(editUserSchema, 'body'), handleEditUserProfile);
-router.delete('/profile', handleDeleteUser);
+router.delete('/user', handleDeleteUser);
 router.get('/logged-user', handleFetchUserMinimalInfo);
 
 export default router;

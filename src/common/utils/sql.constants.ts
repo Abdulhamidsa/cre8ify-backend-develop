@@ -11,7 +11,7 @@ export const SQL_QUERIES = {
   `,
   rollbackUser: 'DELETE FROM users WHERE id = $1;',
   getUserLogin: 'SELECT password_hash, mongo_ref FROM users WHERE email = $1;',
-  deleteUser: 'DELETE FROM users WHERE mongo_ref = $1;',
+  deactivateUser: 'UPDATE users SET active = false, deleted_at = NOW() WHERE mongo_ref = $1 AND active = true;',
 
   createUsersTable: `
     CREATE TABLE IF NOT EXISTS users (
@@ -19,7 +19,9 @@ export const SQL_QUERIES = {
       email VARCHAR(250) UNIQUE NOT NULL,
       password_hash TEXT NOT NULL,
       mongo_ref VARCHAR(100) UNIQUE NOT NULL,
-      role VARCHAR(50) DEFAULT 'user' NOT NULL
+      role VARCHAR(50) DEFAULT 'user' NOT NULL,
+      active BOOLEAN DEFAULT true,
+      deleted_at TIMESTAMP
     );
   `,
 };
