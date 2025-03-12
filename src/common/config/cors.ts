@@ -15,5 +15,5 @@ export const corsOptions: CorsOptions = {
   },
   credentials: true,
   optionsSuccessStatus: 200,
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Set-Cookie', 'X-Requested-With', 'Accept'],
 };
