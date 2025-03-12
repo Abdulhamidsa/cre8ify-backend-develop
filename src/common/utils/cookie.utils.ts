@@ -8,7 +8,7 @@ export const getCookieOptions = (tokenType: 'access' | 'refresh'): CookieOptions
   const cookieOptions: CookieOptions = {
     httpOnly: true,
     secure: isProd,
-    sameSite: isProd ? 'none' : 'lax',
+    sameSite: 'none',
   };
 
   cookieOptions.maxAge = tokenType === 'access' ? SECRETS.accessTokenMaxAge : SECRETS.refreshTokenMaxAge;
