@@ -3,11 +3,9 @@ import { CookieOptions } from 'express';
 import { SECRETS } from '../config/secrets.js';
 
 export const getCookieOptions = (tokenType: 'access' | 'refresh'): CookieOptions => {
-  const isProd = SECRETS.nodeEnv === 'production';
-
   const cookieOptions: CookieOptions = {
     httpOnly: true,
-    secure: isProd,
+    secure: true,
     sameSite: 'none',
   };
 
