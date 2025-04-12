@@ -4,7 +4,7 @@ This is the backend API for **Profolio** — built with **Express.js**, **TypeSc
 
 ---
 
-## ⚙️ Tech Stack
+## Tech Stack
 
 - Node.js + TypeScript
 - Express.js
@@ -20,7 +20,7 @@ This is the backend API for **Profolio** — built with **Express.js**, **TypeSc
 
 ---
 
-## 🚀 Setup
+## Setup
 
 ### 1. Clone the repo
 
