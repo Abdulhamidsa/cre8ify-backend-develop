@@ -5,14 +5,10 @@ import express, { Request, Response } from 'express';
 import { rateLimit } from 'express-rate-limit';
 
 import { corsOptions } from './common/config/cors.js';
-import { connectMongoDB } from './common/config/mongo.connection.js';
-import { SECRETS } from './common/config/secrets.js';
 import expressErrorMiddleware from './common/middleware/error.middleware.js';
-import Logger from './common/utils/logger.js';
 import routes from './routes/index.js';
 
 const app = express();
-const PORT = SECRETS.port;
 // Rate limiter middleware
 const limiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
@@ -35,16 +31,5 @@ app.use('/api', routes);
 // Error handling middleware
 app.use(expressErrorMiddleware);
 // Start function
-export const start = async (): Promise<void> => {
-  try {
-    await connectMongoDB();
-    Logger.info('Connected to SQL and MongoDB');
-    app.listen(PORT, () => {
-      Logger.info(`Server running at http://localhost:${PORT}`);
-    });
-  } catch (error) {
-    Logger.error(error);
-    process.exit(1);
-  }
-};
+
 export default app;
