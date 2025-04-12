@@ -4,7 +4,6 @@ module.exports = {
   plugins: ['import'],
   extends: ['plugin:import/errors', 'plugin:import/warnings'],
   rules: {
-    // Enforce extensions in ESM imports
     'import/extensions': [
       'error',
       'ignorePackages',
