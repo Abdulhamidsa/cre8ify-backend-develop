@@ -15,18 +15,16 @@ const expressErrorMiddleware: ErrorRequestHandler = (
   const statusCode = err instanceof AppError ? err.status : 500;
   const message = getErrorMessage(err);
 
-  Logger.error(message); // Log the message
+  Logger.error(message);
 
-  // If it's a development environment, log the stack trace as well
   if (isDev && err.stack) {
     Logger.debug(`Stack Trace:\n${err.stack}`);
   }
 
-  // Send the error response
   res.status(statusCode).json({
     success: false,
     message,
-    details: err instanceof AppError ? err.details : undefined, // Send details if available
+    details: err instanceof AppError ? err.details : undefined,
   });
 };
 
