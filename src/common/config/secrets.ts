@@ -33,9 +33,6 @@ export const SECRETS = {
   cookieSameSite: process.env.COOKIE_SAME_SITE || 'lax', // Less strict in development
   rateLimitWindowMs: process.env.RATE_LIMIT_WINDOW_MS ? parseInt(process.env.RATE_LIMIT_WINDOW_MS) : 60000, // 1 minute
   rateLimitMax: process.env.RATE_LIMIT_MAX ? parseInt(process.env.RATE_LIMIT_MAX) : 500, // Higher limit for dev
-  sentryDsn: process.env.SENTRY_DSN || '',
-  apiBaseUrl: process.env.API_BASE_URL || 'http://localhost:5173',
-  frontendAppUrl: process.env.FRONTEND_APP_URL || 'http://localhost:5173',
 
   openaiApiKey: process.env.OPENAI_API_KEY,
   geminiApiKey: process.env.GEMINI_API_KEY,
