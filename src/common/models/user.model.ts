@@ -25,6 +25,7 @@ interface IUser extends Document {
 const UserSchema: Schema<IUser> = new Schema(
   {
     mongoRef: {
+      // This is the user's unique identifier
       type: String,
       unique: true,
       required: true,
