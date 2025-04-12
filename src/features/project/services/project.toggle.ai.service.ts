@@ -1,9 +1,8 @@
 import { AppError } from '../../../common/errors/app.error.js';
+import { Project } from '../../../common/models/projects.model.js';
+import { User } from '../../../common/models/user.model.js';
 import Logger from '../../../common/utils/logger.js';
-import { Project } from '../../../models/projects.model.js';
-import { User } from '../../../models/user.model.js';
 
-// Service to get all projects for the logged in user and transform them
 export const getAllUserProjectsService = async (
   mongoRef: string,
 ): Promise<
@@ -14,7 +13,7 @@ export const getAllUserProjectsService = async (
     url: string;
     media: { url: string }[];
     thumbnail?: string;
-    tags: string[]; // converted to string, if needed
+    tags: string[];
     feedbackAllowed: boolean;
     feedback: {
       userId: string;
@@ -30,7 +29,6 @@ export const getAllUserProjectsService = async (
     const projects = await Project.find({ userId: user._id }).lean();
     const transformedProjects = projects.map((project) => {
       return {
-        // Cast _id to mongoose.Types.ObjectId then to string
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         id: (project._id as any).toString(),
         title: project.title,

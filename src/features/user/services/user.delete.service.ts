@@ -1,8 +1,8 @@
 import { getSQLClient } from '../../../common/config/sql.client.js';
 import { AppError } from '../../../common/errors/app.error.js';
+import { User } from '../../../common/models/user.model.js';
 import Logger from '../../../common/utils/logger.js';
 import { SQL_QUERIES } from '../../../common/utils/sql.constants.js';
-import { User } from '../../../models/user.model.js';
 
 export const deactivateUserService = async (mongoRef: string): Promise<void> => {
   const sqlClient = await getSQLClient();

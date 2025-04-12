@@ -1,9 +1,9 @@
 import { AppError } from '../../../common/errors/app.error.js';
+import { Post, PostDocument } from '../../../common/models/post.model.js';
+import { User } from '../../../common/models/user.model.js';
 import Logger from '../../../common/utils/logger.js';
 import { saveImageToCloudinary } from '../../../common/utils/saveImageToCloudinary.js';
 import { AddPostInput } from '../../../common/validation/post.zod.js';
-import { Post, PostDocument } from '../../../models/post.model.js';
-import { User } from '../../../models/user.model.js';
 
 export const addPostService = async (mongoRef: string, postData: AddPostInput): Promise<PostDocument> => {
   try {

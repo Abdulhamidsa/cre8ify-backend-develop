@@ -1,8 +1,8 @@
 import { Types } from 'mongoose';
 
 import { AppError } from '../../../common/errors/app.error.js';
-import { PopulatedPostDocument, Post } from '../../../models/post.model.js';
-import { User } from '../../../models/user.model.js';
+import { PopulatedPostDocument, Post } from '../../../common/models/post.model.js';
+import { User } from '../../../common/models/user.model.js';
 
 export const getAllUserPosts = async (friendlyId: string): Promise<PopulatedPostDocument[]> => {
   try {

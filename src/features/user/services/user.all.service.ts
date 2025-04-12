@@ -1,4 +1,4 @@
-import { User } from '../../../models/user.model.js';
+import { User } from '../../../common/models/user.model.js';
 
 export const getAllUsersService = async (page: number, limit: number, searchTerm?: string) => {
   try {

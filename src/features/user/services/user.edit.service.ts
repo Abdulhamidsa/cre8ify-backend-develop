@@ -1,10 +1,10 @@
 import { AppError } from '../../../common/errors/app.error.js';
+import { User } from '../../../common/models/user.model.js';
 import { generateFriendlyId } from '../../../common/utils/generate.id.js';
 import { isProfileComplete } from '../../../common/utils/helper.js';
 import Logger from '../../../common/utils/logger.js';
 import { saveImageToCloudinary } from '../../../common/utils/saveImageToCloudinary.js';
 import { EditUserInput } from '../../../common/validation/user.zod.js';
-import { User } from '../../../models/user.model.js';
 
 export const editUserProfileService = async (mongoRef: string, profileData: EditUserInput): Promise<EditUserInput> => {
   try {

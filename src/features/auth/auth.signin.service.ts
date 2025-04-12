@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt';
 
 import { ensureTablesExist, getSQLClient } from '../../common/config/sql.client.js';
 import { AppError } from '../../common/errors/app.error.js';
+import { User } from '../../common/models/user.model.js';
 import { SignInResponse } from '../../common/types/user.types.js';
 import { getErrorMessage } from '../../common/utils/error.utils.js';
 import { generateTokens } from '../../common/utils/jwt.js';
@@ -10,7 +11,6 @@ import { ApiResponse, createResponse } from '../../common/utils/response.handler
 import { SQL_QUERIES } from '../../common/utils/sql.constants.js';
 import { withTransaction } from '../../common/utils/transaction.helper.js';
 import { SignInInput } from '../../common/validation/user.zod.js';
-import { User } from '../../models/user.model.js';
 
 export const signInUser = async (data: SignInInput): Promise<ApiResponse<SignInResponse>> => {
   const { email, password } = data;

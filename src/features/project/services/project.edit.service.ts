@@ -1,8 +1,8 @@
 import { AppError } from '../../../common/errors/app.error.js';
+import { Project } from '../../../common/models/projects.model.js';
+import { User } from '../../../common/models/user.model.js';
 import Logger from '../../../common/utils/logger.js';
 import { EditProjectInput } from '../../../common/validation/project.zod.js';
-import { Project } from '../../../models/projects.model.js';
-import { User } from '../../../models/user.model.js';
 
 export const editProjectService = async (mongoRef: string, projectId: string, projectData: EditProjectInput) => {
   try {

@@ -1,12 +1,12 @@
 import { getSQLClient } from '../../common/config/sql.client.js';
 import { AppError } from '../../common/errors/app.error.js';
+import { User } from '../../common/models/user.model.js';
 import { generateFriendlyId } from '../../common/utils/helper.js';
 import { generateMongoRef, hashPassword } from '../../common/utils/helpers.js';
 import Logger from '../../common/utils/logger.js';
 import { saveDocument } from '../../common/utils/mongo.service.js';
 import { SQL_QUERIES } from '../../common/utils/sql.constants.js';
 import { SignUpInput } from '../../common/validation/user.zod.js';
-import { User } from '../../models/user.model.js';
 
 export const signUpUserService = async (data: SignUpInput): Promise<void> => {
   const {
@@ -65,12 +65,10 @@ export const signUpUserService = async (data: SignUpInput): Promise<void> => {
     });
 
     if (!mongoUser) {
-      // If MongoDB insert fails, we need to rollback SQL changes
       await sqlClient.query('ROLLBACK');
       throw new AppError('Failed to create user in MongoDB', 500);
     }
 
-    // Commit the transaction if both SQL and MongoDB operations succeed
     await sqlClient.query('COMMIT');
   } catch (error) {
     // Rollback in case of any error

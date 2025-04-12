@@ -1,7 +1,7 @@
 import { AppError } from '../../../common/errors/app.error.js';
+import { User } from '../../../common/models/user.model.js';
 import Logger from '../../../common/utils/logger.js';
 import { UserResponse } from '../../../common/validation/user.zod.js';
-import { User } from '../../../models/user.model.js';
 
 export const getPublicUserProfileService = async (friendlyId: string): Promise<Partial<UserResponse>> => {
   try {

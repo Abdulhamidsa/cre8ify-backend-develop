@@ -2,10 +2,10 @@ import { RequestHandler } from 'express';
 import mongoose from 'mongoose';
 
 import { AppError } from '../../common/errors/app.error.js';
+import { addCommentSchema } from '../../common/models/comment.model.js';
+import { Post } from '../../common/models/post.model.js';
 import { createResponse } from '../../common/utils/response.handler.js';
 import { fetchAllPostsSchema } from '../../common/validation/post.zod.js';
-import { addCommentSchema } from '../../models/comment.model.js';
-import { Post } from '../../models/post.model.js';
 import { addPostService } from './services/post.add.service.js';
 import { fetchAllPostsService } from './services/post.get.all.service.js';
 import { getAllUserPosts } from './services/post.get.user.service.js';

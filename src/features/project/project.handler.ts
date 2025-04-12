@@ -1,7 +1,6 @@
 import { RequestHandler } from 'express';
 
 import { createResponse } from '../../common/utils/response.handler.js';
-// import { FetchedProjectQueryType } from '../../common/validation/project.zod.js';
 import { addProjectService } from './services/project.add.service.js';
 import { deleteProjectService } from './services/project.delete.service.js';
 import { editProjectService } from './services/project.edit.service.js';

@@ -1,11 +1,10 @@
 import { AppError } from '../../../common/errors/app.error.js';
+import { User } from '../../../common/models/user.model.js';
 import Logger from '../../../common/utils/logger.js';
 import { UserResponse } from '../../../common/validation/user.zod.js';
-import { User } from '../../../models/user.model.js';
 
 export const getUserProfileService = async (mongoRef: string): Promise<UserResponse> => {
   try {
-    // Fetch the user profile based on mongoRef
     const user = await User.findOne({ mongoRef: mongoRef })
       .select<UserResponse>('-__v -active -deletedAt -_id -mongoRef')
       .lean<UserResponse>();

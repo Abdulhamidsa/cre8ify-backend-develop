@@ -1,8 +1,8 @@
+import { Project } from '../../../common/models/projects.model.js';
+import { Tag } from '../../../common/models/tag.model.js';
+import { User } from '../../../common/models/user.model.js';
 import Logger from '../../../common/utils/logger.js';
 import { fetchProjectWithUser } from '../../../common/validation/project.zod.js';
-import { Project } from '../../../models/projects.model.js';
-import { Tag } from '../../../models/tag.model.js';
-import { User } from '../../../models/user.model.js';
 
 export const getAllProjectsService = async (page: number, limit: number, search: string) => {
   try {
