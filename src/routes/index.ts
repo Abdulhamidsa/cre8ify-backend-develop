@@ -17,9 +17,9 @@ router.use('/auth', authPublicRoutes);
 router.use(projectsPublicRoutes);
 router.use(userPublicRoutes);
 
-// Private routes (common middlewares)
+//  refreshtoken middlewear
 router.use(authenticateAndRefresh, attachUserContext);
-
+// Private routes
 router.use(authPrivateRoutes);
 router.use(projectPrivateRoutes);
 router.use(userPrivateRoutes);

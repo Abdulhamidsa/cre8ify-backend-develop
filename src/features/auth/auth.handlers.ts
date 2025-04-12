@@ -96,15 +96,14 @@ export const signoutHandler: RequestHandler = async (req, res, next): Promise<vo
       throw new AppError('Refresh token does not match the logged-in user', 403);
     }
 
-    // ✅ Use getCookieOptions to clear cookies properly
     res.cookie('accessToken', '', {
       ...getCookieOptions('access'),
-      expires: new Date(0), // Forces cookie expiration
+      expires: new Date(0),
     });
 
     res.cookie('refreshToken', '', {
       ...getCookieOptions('refresh'),
-      expires: new Date(0), // Forces cookie expiration
+      expires: new Date(0),
     });
 
     // Respond with success

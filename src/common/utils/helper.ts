@@ -9,7 +9,7 @@ export const generateFriendlyId = (firstName: string): string => {
 };
 
 export const hashPassword = async (password: string): Promise<string> => {
-  return await bcrypt.hash(password, 10);
+  return await bcrypt.hash(password, 12);
 };
 
 export const isProfileComplete = (user: UserType): boolean => {

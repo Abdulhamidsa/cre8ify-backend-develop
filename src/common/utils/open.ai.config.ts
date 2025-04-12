@@ -59,7 +59,6 @@ export const chatWithAI = async (
   lastMode?: ValidChatMode,
 ): Promise<AIResponse> => {
   try {
-    // Ensure we never pass "refresh" into `generateChatPrompt`
     const usedMode: ValidChatMode =
       mode === 'refresh'
         ? (lastMode ??
@@ -81,7 +80,7 @@ export const chatWithAI = async (
       generationConfig: { maxOutputTokens: 500 },
     };
 
-    console.log('🚀 Sending request to Gemini API:', requestBody); // Debugging Log
+    console.log('🚀 Sending request to Gemini API:', requestBody);
 
     const response = await fetch(`${GEMINI_API_URL}?key=${SECRETS.geminiApiKey}`, {
       method: 'POST',
@@ -101,10 +100,8 @@ export const chatWithAI = async (
 
     let responseText = data.candidates[0].content.parts[0].text.trim();
 
-    // Remove any unwanted markdown JSON wrappers
     responseText = responseText.replace(/```json\n?/g, '').replace(/```$/g, '');
 
-    // Extract JSON block from response
     const match = responseText.match(/\{[\s\S]*\}/);
     if (match) {
       responseText = match[0];
