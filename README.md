@@ -25,8 +25,8 @@ This is the backend API for **Profolio** — built with **Express.js**, **TypeSc
 ### 1. Clone the repo
 
 ```bash
-git clone https://github.com/Abdulhamidsa/cre8ify-backend.git
-cd cre8ify-backend
+git clone https://github.com/Abdulhamidsa/cre8ify-backend-develop.git
+cd cre8ify-backend-develop
 ```
 
 ### 2. Install dependencies
