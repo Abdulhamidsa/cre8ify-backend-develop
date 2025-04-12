@@ -7,7 +7,7 @@
   "scripts": {
     "clean": "rimraf dist",
     "build": "tsc && node add-js-extensions.js",
-    "start": "pnpm run build && node dist/index.js",
+    "start": "npm run build && node dist/index.js",
     "dev": "tsx watch --clear-screen=false src/index.ts"
   },
   "keywords": [],
