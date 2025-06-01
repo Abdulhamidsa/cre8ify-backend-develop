@@ -25,7 +25,7 @@ app.use(express.json());
 app.use(cors(corsOptions));
 // Routes
 app.get('/', (_req: Request, res: Response) => {
-  res.send('SERVER IS RUNNING READY FOR REQUESTS');
+  res.send('SERVER IS RUNNING MY G READY FOR REQUESTS');
 });
 app.use('/api', routes);
 // Error handling middleware
