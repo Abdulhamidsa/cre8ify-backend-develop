@@ -11,14 +11,12 @@ import {
   handleDeleteProject,
   handleEditProject,
   handleGetAllUserProjects,
-  handleGetUserProjects,
 } from '../project.handler.js';
 import { handleAIChat } from '../project.handlers.ai.js';
 
 const router = Router();
 
 router.post('/project', ValidZod(addProjectSchema, 'body'), handleAddProject);
-router.get('/projects/:projectId', handleGetUserProjects);
 router.put(
   '/project/:id',
   ValidZod(projectIdValidationSchema, 'params'),

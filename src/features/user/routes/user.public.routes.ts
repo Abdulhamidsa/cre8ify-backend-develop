@@ -8,5 +8,6 @@ const router = express.Router();
 
 router.get('/users', ValidZod(getAllUsersValidationSchema), handleGetAllUsers);
 router.get('/user/:friendlyId', handleFetchPublicUserProfile);
+router.get('/profile/:friendlyId', handleFetchPublicUserProfile);
 
 export default router;
