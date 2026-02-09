@@ -5,6 +5,7 @@ import { addProjectService } from './services/project.add.service.js';
 import { deleteProjectService } from './services/project.delete.service.js';
 import { editProjectService } from './services/project.edit.service.js';
 import { getAllProjectsService } from './services/project.get.all.service.js';
+import { getProjectByIdService } from './services/project.getById.service.js';
 import { getUserProjectsService } from './services/project.get.project.service.js';
 import { getAllUserProjectsService } from './services/project.toggle.ai.service.js';
 import { getUserProjectsByFriendlyId } from './services/project.user.getById.service.js';
@@ -43,6 +44,18 @@ export const handleGetUserPublicProjects: RequestHandler = async (req, res, next
     next(error);
   }
 };
+
+// fetch single project by ID
+export const handleGetProjectById: RequestHandler = async (req, res, next) => {
+  try {
+    const { projectId } = req.params;
+    const project = await getProjectByIdService(projectId);
+    res.status(200).json(createResponse(true, project));
+  } catch (error) {
+    next(error);
+  }
+};
+
 // edit user project
 export const handleEditProject: RequestHandler = async (req, res, next) => {
   try {
