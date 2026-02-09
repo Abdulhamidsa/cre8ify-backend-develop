@@ -4,7 +4,7 @@ import { PostType } from '../../../common/types/types.js';
 
 export const fetchAllPostsService = async (
   { limit = 10, page = 1 }: { limit?: number; page?: number },
-  userId: string,
+  userId: string | null,
 ): Promise<{ posts: PostType[]; totalPages: number; currentPage: number }> => {
   const query: Record<string, unknown> = {};
 
@@ -33,12 +33,33 @@ export const fetchAllPostsService = async (
       ])
       .lean();
 
-    const mappedPosts = posts.map((post) => ({
-      ...post,
-      id: post._id.toString(),
-      likedByUser: Array.isArray(post.likes) ? post.likes.some((likeId) => likeId.toString() === userId) : false,
-      likesCount: Array.isArray(post.likes) ? post.likes.length : 0,
-    })) as PostType[];
+    const mappedPosts = posts.map((post) => {
+      const isLikedByUser = userId && Array.isArray(post.likes) ? 
+        post.likes.some((likeId) => likeId.toString() === userId) : false;
+      
+      // Debug logging for first post
+      if (posts.indexOf(post) === 0) {
+        console.log('Like Calculation Debug for first post:', {
+          postId: post._id.toString(),
+          userId,
+          hasUserId: !!userId,
+          likesArray: post.likes,
+          likesArrayLength: post.likes.length,
+          likedByUser: isLikedByUser,
+          likeComparison: post.likes.map(likeId => ({
+            likeId: likeId.toString(),
+            matchesUser: likeId.toString() === userId,
+          }))
+        });
+      }
+      
+      return {
+        ...post,
+        id: post._id.toString(),
+        likedByUser: isLikedByUser,
+        likesCount: Array.isArray(post.likes) ? post.likes.length : 0,
+      };
+    }) as PostType[];
 
     return {
       posts: mappedPosts,
