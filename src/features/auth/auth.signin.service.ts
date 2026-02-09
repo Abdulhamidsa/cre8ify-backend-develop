@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 import { ensureTablesExist, getSQLClient } from '../../common/config/sql.client.js';
 import { AppError } from '../../common/errors/app.error.js';
