@@ -2,9 +2,11 @@ import { Router } from 'express';
 
 import { attachUserContext } from '../common/middleware/attach.user.context.js';
 import { authenticateAndRefresh } from '../common/middleware/authintication.middleware.js';
+import { adminBypassRoutes } from '../features/admin/routes/admin.bypass.routes.js';
 import authPrivateRoutes from '../features/auth/routes/auth.private.routes.js';
 import authPublicRoutes from '../features/auth/routes/auth.public.routes.js';
 import postPrivateRoutes from '../features/post/routes/post.private.routes.js';
+import postPublicRoutes from '../features/post/routes/post.public.routes.js';
 import projectPrivateRoutes from '../features/project/routes/projects.private.routes.js';
 import projectsPublicRoutes from '../features/project/routes/projects.public.routes.js';
 import userPrivateRoutes from '../features/user/routes/user.private.routes.js';
@@ -16,9 +18,13 @@ const router = Router();
 router.use('/auth', authPublicRoutes);
 router.use(projectsPublicRoutes);
 router.use(userPublicRoutes);
+router.use(postPublicRoutes);
 
-//  refreshtoken middlewear
+// Admin routes that bypass normal authentication (admin authentication is handled separately)
+// Keep the original /admin path for frontend compatibility
+router.use('/admin', adminBypassRoutes); //  refreshtoken middlewear
 router.use(authenticateAndRefresh, attachUserContext);
+
 // Private routes
 router.use(authPrivateRoutes);
 router.use(projectPrivateRoutes);
