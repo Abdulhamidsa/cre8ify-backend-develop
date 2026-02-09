@@ -24,7 +24,36 @@ export const handleAddPost: RequestHandler = async (req, res, next) => {
 export const handleFetchAllPosts: RequestHandler = async (req, res, next) => {
   try {
     const { limit, page } = fetchAllPostsSchema.parse(req.query);
-    const userId = res.locals.userId.userId;
+    
+    // Robust user ID extraction with multiple fallbacks
+    let userId: string | null = null;
+    
+    // Method 1: Check res.locals.userId.userId (current expected structure)
+    if (res.locals?.userId?.userId) {
+      userId = res.locals.userId.userId;
+    }
+    // Method 2: Check if res.locals.userId is the actual user ID string
+    else if (typeof res.locals?.userId === 'string') {
+      userId = res.locals.userId;
+    }
+    // Method 3: Check res.locals.user.userId (alternative structure)
+    else if (res.locals?.user?.userId) {
+      userId = res.locals.user.userId;
+    }
+    // Method 4: Extract from mongoRef if available
+    else if (res.locals?.mongoRef) {
+      // We'll need to convert mongoRef to userId if needed
+      // For now, just log this case
+      console.log('Found mongoRef but no userId:', res.locals.mongoRef);
+    }
+
+    // Debug logging
+    console.log('Posts Handler Debug:', {
+      hasResLocals: !!res.locals,
+      userId,
+      resLocalsStructure: res.locals,
+      extractedUserId: userId,
+    });
 
     const postsData = await fetchAllPostsService({ limit, page }, userId);
 
