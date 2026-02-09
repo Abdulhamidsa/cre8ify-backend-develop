@@ -3,8 +3,9 @@ import { SECRETS } from './common/config/secrets.js';
 import { getSQLClient } from './common/config/sql.client.js';
 import Logger from './common/utils/logger.js';
 import app from './server.js';
-
+import cors from "cors";
 const PORT = SECRETS.port;
+
 
 const start = async (): Promise<void> => {
   try {

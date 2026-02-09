@@ -17,7 +17,22 @@ const limiter = rateLimit({
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 });
 
+const allowedOrigins = [
+  "https://form-subbmition.vercel.app",
+  "http://localhost:3000"
+];
+
+const corsOptions = {
+  origin: allowedOrigins,
+  methods: ["GET", "POST"],
+  credentials: true
+};
+
+
+
+
 // Middlewares
+app.set('trust proxy', 1);
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(limiter);
