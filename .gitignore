@@ -12,6 +12,7 @@ build/
 .env.test.local
 .env.production.local
 .env.production
+.env.dev.save
 
 # Logs
 logs/
