@@ -1,65 +1,13 @@
-import { SECRETS } from '../config/secrets.js';
 import { AppError } from '../errors/app.error.js';
 import { generateChatPrompt } from './generateChatPrompt.js';
 
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+const OLLAMA_API_URL = 'http://127.0.0.1:11434/api/chat';
 
-/**
- * Allowed chat modes excluding "refresh"
- */
-export type ValidChatMode =
-  | 'ideas'
-  | 'improve'
-  | 'similar'
-  | 'weaknesses'
-  | 'expansion'
-  | 'monetize'
-  | 'audience'
-  | 'rewrite';
+type AIMode = 'rewrite' | 'improve' | 'similar' | 'weaknesses' | 'expansion' | 'monetize' | 'audience' | 'ideas';
 
-/**
- * All chat modes, including "refresh"
- */
-export type ChatMode = ValidChatMode | 'refresh';
-
-/**
- * Expected format of a project
- */
-export interface Project {
-  title: string;
-  description: string;
-}
-
-/**
- * Expected AI API Response
- */
-export interface AIResponse {
-  monetizationStrategies: boolean;
-  similarProjects: boolean;
-  audienceAnalysis: boolean;
-  improvements: boolean;
-  success: boolean;
-  message?: string;
-  data?: { title: string; description: string }[];
-}
-
-/**
- * Handles AI-based project discussions using Google Gemini API.
- *
- * @param projects - Array of project objects containing title and description.
- * @param profession - User's profession for better AI context.
- * @param mode - The specific mode of conversation (e.g., 'improve', 'monetize').
- * @param lastMode - (Optional) The last mode used, required when refreshing.
- * @returns Promise resolving to AI-generated response.
- */
-export const chatWithAI = async (
-  projects: Project[],
-  profession: string,
-  mode: ChatMode,
-  lastMode?: ValidChatMode,
-): Promise<AIResponse> => {
+export const chatWithAI = async (projects: unknown, profession: string, mode: string, lastMode?: string) => {
   try {
-    const usedMode: ValidChatMode =
+    const usedMode =
       mode === 'refresh'
         ? (lastMode ??
           (() => {
@@ -67,53 +15,73 @@ export const chatWithAI = async (
           })())
         : mode;
 
+    if (!isValidMode(usedMode)) {
+      throw new AppError(`Invalid mode: ${usedMode}`, 400);
+    }
+
     const requestBody = {
-      contents: [
+      model: 'qwen2.5:1.5b',
+      stream: false,
+      messages: [
         {
-          parts: [
-            {
-              text: generateChatPrompt(projects, profession, usedMode),
-            },
-          ],
+          role: 'user',
+          content: generateChatPrompt(
+            projects as { title: string; description: string }[],
+            profession,
+            usedMode as AIMode,
+          ),
         },
       ],
-      generationConfig: { maxOutputTokens: 500 },
+      options: {
+        num_predict: 500,
+        temperature: 0.4,
+      },
     };
 
-    console.log('🚀 Sending request to Gemini API:', requestBody);
-
-    const response = await fetch(`${GEMINI_API_URL}?key=${SECRETS.geminiApiKey}`, {
+    const response = await fetch(OLLAMA_API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(requestBody),
     });
 
     if (!response.ok) {
-      throw new AppError(`Gemini API Error: ${response.statusText}`, response.status);
+      const errorText = await response.text().catch(() => '');
+      throw new AppError(`Ollama API Error: ${response.status} ${response.statusText} - ${errorText}`, response.status);
     }
 
     const data = await response.json();
 
-    if (!data.candidates || !data.candidates[0]?.content?.parts?.[0]?.text) {
-      throw new AppError('Invalid AI response format', 500);
+    const rawText = (data?.message?.content ?? '').trim();
+    if (!rawText) {
+      throw new AppError('Invalid AI response format: empty response', 500);
     }
 
-    let responseText = data.candidates[0].content.parts[0].text.trim();
-
-    responseText = responseText.replace(/```json\n?/g, '').replace(/```$/g, '');
-
+    let responseText = rawText.replace(/```json\n?/g, '').replace(/```$/g, '');
     const match = responseText.match(/\{[\s\S]*\}/);
-    if (match) {
-      responseText = match[0];
-    } else {
+
+    if (!match) {
       throw new AppError('Invalid AI response format: No valid JSON detected.', 500);
     }
 
-    const parsedResponse: AIResponse = JSON.parse(responseText);
-
-    return parsedResponse;
+    responseText = match[0];
+    return JSON.parse(responseText);
   } catch (error: unknown) {
-    console.error('⚠️ Error in AI chat:', error);
-    throw new AppError('Failed to process chat request', 500, error instanceof Error ? error.message : error);
+    if (error instanceof AppError) throw error;
+
+    throw new AppError('Failed to process chat request', 500, error instanceof Error ? error.message : String(error));
   }
+};
+
+const isValidMode = (mode: string): mode is AIMode => {
+  const validModes: AIMode[] = [
+    'rewrite',
+    'improve',
+    'similar',
+    'weaknesses',
+    'expansion',
+    'monetize',
+    'audience',
+    'ideas',
+  ];
+  return validModes.includes(mode as AIMode);
 };
